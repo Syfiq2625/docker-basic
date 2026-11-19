@@ -1,0 +1,48 @@
+name: CI Project-02 (Build Image)
+
+on:
+  push:
+    branches: [main]
+    paths: 
+      - 'project-02/**'
+      - '.github/workflows/ci-project-02.yml'    
+
+  pull_request:
+    branches: [main]
+    paths: 
+      - 'project-02/**'
+      - '.github/workflows/ci-project-02.yml'
+
+  workflow_dispatch:
+
+
+defaults:
+  run:
+    working-direktory: './project-02'
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build Image
+        run: docker build -t syfiq/myapp:latest .
+
+      - name: Run Docker
+        run: docker run -d -p 5000:5000 --name my-app syfiq/myapp:latest
+
+      - name: Docker ps
+        run: docker container ls
+
+      - name: Docker Stop
+        run: docker container stop my-app
+
+      - name: Remove Container
+        run: docker rm my-app
+
+
