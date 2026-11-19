@@ -18,7 +18,7 @@ on:
 
 defaults:
   run:
-    working-direktory: './project-02'
+    working-directory: './project-02'
     shell: bash
 
 jobs:
