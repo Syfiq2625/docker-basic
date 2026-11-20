@@ -16,6 +16,11 @@ on:
 
   workflow_dispatch:
 
+defaults:
+  run:
+    workinng-directory: ./project-03
+    shell: bash
+
 jobs:
   test:
     runs-on: ubuntu-latest
