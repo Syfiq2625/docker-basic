@@ -52,7 +52,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          docker run --rm "$IMAGE_NAME:$IMAGE_TAG" pytest -v
+          docker run --rm "$IMAGE_NAME:$IMAGE_TAG" python -m pytest -v
 
       - name: Cleanup Docker Image
         if: always()
