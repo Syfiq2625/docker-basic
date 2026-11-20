@@ -1,0 +1,56 @@
+
+name: Docker CI Testing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'project-03/**'
+      - '.github/workflows/ci-project-03.yml'
+
+  pull_request:
+    branches: [main]
+    paths:
+      - 'project-03/**'
+      - '.github/workflows/ci-project-03.yml'
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      IMAGE_NAME: python-ci
+      IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker Version
+        run: |
+          docker --version
+          docker info
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            --progress=plain \
+            -t "$IMAGE_NAME:$IMAGE_TAG" \
+            .
+
+      - name: Inspect Docker Image
+        run: |
+          docker image inspect "$IMAGE_NAME:$IMAGE_TAG"
+
+      - name: Run Tests
+        run: |
+          docker run --rm "$IMAGE_NAME:$IMAGE_TAG" pytest -v
+
+      - name: Cleanup Docker Image
+        if: always()
+        run: |
+          docker rmi "$IMAGE_NAME:$IMAGE_TAG"
+
