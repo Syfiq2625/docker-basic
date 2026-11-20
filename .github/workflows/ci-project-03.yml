@@ -18,7 +18,7 @@ on:
 
 defaults:
   run:
-    workinng-directory: ./project-03
+    working-directory: ./project-03
     shell: bash
 
 jobs:
