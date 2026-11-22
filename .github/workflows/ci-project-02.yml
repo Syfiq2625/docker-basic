@@ -27,7 +27,7 @@ jobs:
     timeout-minutes: 10
 
     env:
-      $IMAGE_TAG: ${{ github.sha }}
+      IMAGE_TAG: ${{ github.sha }}
 
     steps:
       - name: Checkout Repository
@@ -39,15 +39,15 @@ jobs:
           driver: docker-container
 
       - name: Build Image
-        run: docker buildx b \
+        run: docker buildx build \
                --load \
                --cache-to type=gha,mode=max \
-               --cache-from type=gha,mode=max \
+               --cache-from type=gha \
                --tag python-ci:${{ github.sha }} \
                .
 
       - name: Run Docker
-        run: docker run -d -p 5000:5000 --name my-app syfiq/myapp:latest
+        run: docker run -d -p 5000:5000 --name my-app python-ci:${{ github.sha }}
 
       - name: Docker ps
         run: docker container ls
