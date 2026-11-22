@@ -39,12 +39,13 @@ jobs:
           driver: docker-container
 
       - name: Build Image
-        run: docker buildx build \
-               --load \
-               --cache-to type=gha,mode=max \
-               --cache-from type=gha \
-               --tag python-ci:${{ github.sha }} \
-               .
+        run: |
+          docker buildx build \
+            --load \
+            --cache-to type=gha,mode=max \
+            --cache-from type=gha \
+            --tag python-ci:${{ github.sha }} \
+            .
 
       - name: Run Docker
         run: docker run -d -p 5000:5000 --name my-app python-ci:${{ github.sha }}
@@ -56,6 +57,7 @@ jobs:
         run: docker container stop my-app
 
       - name: Remove Container
-        run: docker rm my-app
+        if: always()
+        run: docker rm my-app || true
 
 
