@@ -40,11 +40,10 @@ jobs:
 
       - name: Build Image
         run: docker buildx build \
-              --rm \
-              --load \
-              --cache-to type=gha,mode=max \
-              --cache-from type=gha,mode=max \
-              --tag python-ci:${{ github.sha }} \
+               --load \
+               --cache-to type=gha,mode=max \
+               --cache-from type=gha,mode=max \
+               --tag python-ci:${{ github.sha }} \
               .
 
       - name: Run Docker
