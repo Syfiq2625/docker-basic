@@ -26,48 +26,43 @@ jobs:
         working-directory: ./project-04
         shell: bash
 
-    env:
-      IMAGE_NAME: python-ci
-      IMAGE_TAG: ${{ github.sha }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Docker Environment Check
-        run: |
-          docker --version
-          docker info
+      - name: Setup Buildx Docker
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
+      - name: Docker Buildx Inspect
+        run: docker buildx inspect --bootstrap
 
       - name: Build Docker Image
         run: |
-          docker build \
-            --progress=plain \
-            -t "$IMAGE_NAME:$IMAGE_TAG" \
+          docker buildx build \
+            --load \
+            --tag python-ci:${{ github.sha }} \
             .
 
       - name: Inspect Docker Image
         run: |
-          docker image inspect "$IMAGE_NAME:$IMAGE_TAG"
+          docker image inspect python-ci:${{ github.sha }}
 
       - name: Run Ruff
         run: |
-          docker run --rm "$IMAGE_NAME:$IMAGE_TAG" \
+          docker run --rm \
+            python-ci:${{ github.sha }} \
             ruff check .
 
       - name: Run Unit Tests
         run: |
-          docker run --rm "$IMAGE_NAME:$IMAGE_TAG" \
+          docker run --rm \
+            python-ci:${{ github.sha }} \
             python -m pytest -v
-
-      - name: Docker Debugging
-        if: failure()
-        run: |
-          docker ps -a
-          docker images
 
       - name: Cleanup
         if: always()
         run: |
-          docker rmi "$IMAGE_NAME:$IMAGE_TAG" || true
+          docker image rm python-ci:${{ github.sha }} || true
 
