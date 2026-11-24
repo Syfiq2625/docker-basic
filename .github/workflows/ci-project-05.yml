@@ -1,4 +1,4 @@
-name: CI Project-95 (Multi-Stage Build)
+name: CI Project-05 (Multi-Stage Build)
 
 on:
   push:
@@ -60,11 +60,11 @@ jobs:
             --name myproject-05 \
             "$IMAGE_NAME:$IMAGE_TAG"
 
-      - name: Container Info
-        run: docker container ls
-
       - name: Container Stop
         run: docker container stop myproject-05
+        
+      - name: Container Info
+        run: docker container ls
 
       - name: CleanUP Images
         if: always()
