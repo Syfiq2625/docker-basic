@@ -55,7 +55,9 @@ jobs:
 
       - name: Run Container
         run: |
-          docker run --rm --name myproject-05 "$IMAGE_NAME:IMAGE_TAG"
+          docker run --rm \
+            --name myproject-05 \
+            "$IMAGE_NAME:$IMAGE_TAG"
 
       - name: Container Info
         run: docker container ls
