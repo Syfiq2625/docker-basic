@@ -15,15 +15,15 @@ on:
 
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: ./project-05
-    shell: bash
-
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: ./project-05
+        shell: bash
 
     env:
       IMAGE_NAME: project-05
@@ -42,9 +42,10 @@ jobs:
       - name: Docker Build
         run: |
           docker buildx build \
+            --progress=plain \
             --load \
-            --cache-to type=gha, mode=max, scope=project-05 \
-            --cache-from type=gha, scope=project-05 \
+            --cache-from type=gha,scope=project-05 \
+            --cache-to type=gha,mode=max,scope=project-05 \
             -t "$IMAGE_NAME:$IMAGE_TAG" \
             .
 
