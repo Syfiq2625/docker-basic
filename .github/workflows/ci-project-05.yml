@@ -1,0 +1,68 @@
+name: CI Project-95 (Multi-Stage Build)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'project-05/**'
+      - '.github/workflows/ci-project-05.yml'
+
+  pull_request:
+    branches: [main]
+    paths:
+      - 'project-05/**'
+      - '.github/workflows/ci-project-05.yml'
+
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./project-05
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      IMAGE_NAME: project-05
+      IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Buildx Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker Info
+        run: docker info
+
+      - name: Docker Build
+        run: |
+          docker buildx build \
+            --load \
+            --cache-to type=gha, mode=max, scope=project-05 \
+            --cache-from type=gha, scope=project-05 \
+            -t "$IMAGE_NAME:$IMAGE_TAG" \
+            .
+
+      - name: Image info
+        run: |
+          docker image inspect "$IMAGE_NAME:$IMAGE_TAG" 
+
+      - name: Run Container
+        run: |
+          docker run --rm --name myproject-05 "$IMAGE_NAME:IMAGE_TAG"
+
+      - name: Container Info
+        run: docker container ls
+
+      - name: Container Stop
+        run: docker container stop myproject-05
+
+      - name: CleanUP Images
+        if: always()
+        run: docker rmi "IMAGE_NAME:$IMAGE_TAG" || true 
+            
